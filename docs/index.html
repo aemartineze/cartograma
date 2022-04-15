@@ -374,11 +374,10 @@ adolescente en Sudamérica.</p>
 página del Fondo de Población de las Naciones Unidas desde el link:</p>
 <p><a href="https://www.unfpa.org/modules/custom/unfpa_global_sowp_portal/data-file/SWOP-Data-2022.xlsx" class="uri">https://www.unfpa.org/modules/custom/unfpa_global_sowp_portal/data-file/SWOP-Data-2022.xlsx</a></p>
 <pre class="r"><code>#Librerías necesarias
-
+library(sp)
 library(cartogram)
 library(tmap)
 library(maptools)</code></pre>
-<pre><code>## Loading required package: sp</code></pre>
 <pre><code>## Checking rgeos availability: FALSE
 ## Please note that &#39;maptools&#39; will be retired by the end of 2023,
 ## plan transition at your earliest convenience;
@@ -388,8 +387,7 @@ library(maptools)</code></pre>
 ##      to enable gpclib, type gpclibPermit()</code></pre>
 <pre class="r"><code>library(sf)</code></pre>
 <pre><code>## Linking to GEOS 3.9.1, GDAL 3.2.1, PROJ 7.2.1; sf_use_s2() is TRUE</code></pre>
-<pre class="r"><code>library(openxlsx)
-library(sp)</code></pre>
+<pre class="r"><code>library(openxlsx)</code></pre>
 <pre class="r"><code>#Cargamos la información de los polígonos espaciales de los mapas
 data(wrld_simpl)</code></pre>
 <pre class="r"><code># Cargamos las variables que vamos a graficar
