@@ -1,5 +1,5 @@
 ---
-title: "R Notebook"
+title: "Cartograma"
 knit: (function(input_file, encoding) {
     out_dir <- 'docs';
     rmarkdown::render(input_file,
@@ -10,66 +10,78 @@ html_document:
 df_print: paged
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+En este proyecto se elabora un cartograma con la tasa de embarazo adolescente en Sudamérica.
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+Ha sido realizado en base a los pasos descritos en la página:
+
+https://cran.r-project.org/web/packages/cartogram/readme/README.html
+
+Los datos de la tasa de embarazo adolecente han sido cargados de la página del Fondo de Población de las Naciones Unidas desde el link: 
+
+https://www.unfpa.org/modules/custom/unfpa_global_sowp_portal/data-file/SWOP-Data-2022.xlsx
+
 
 ```{r}
-#install.packages("cartogram")
-#install.packages("tmaptools")
-#install.packages("tmap")
-#install.packages("rgdal")
-
-```
-
-```{r}
+#Librerías necesarias
+library(sp)
 library(cartogram)
 library(tmap)
 library(maptools)
 library(sf)
+library(openxlsx)
+
 ```
 
 ```{r}
+#Cargamos la información de los polígonos espaciales de los mapas
 data(wrld_simpl)
 ```
 
 ```{r}
-# Cargamos las variables Covid
+# Cargamos las variables que vamos a graficar
+dir_web <- 'https://www.unfpa.org/modules/custom/unfpa_global_sowp_portal/data-file/SWOP-Data-2022.xlsx'
+ind_data <- read.xlsx(dir_web, sheet = 3, cols = 3:4, rows = 2:210)
+colnames(ind_data) <- c("NAME","tasa_embarazo_adolescente")
 
-covid_data <- read.csv("covid_sudamerica.csv", sep = ";", header = TRUE)
+#Listado de paises de Sudamerica
+paises <- c("Argentina", "Bolivia (Plurinational State of)", "Brazil", "Chile", "Colombia", "Ecuador", "French Guiana", "Guyana", "Paraguay", "Peru", "Suriname", "Uruguay", "Venezuela (Bolivarian Republic of)")
 
-#https://www.unfpa.org/modules/custom/unfpa_global_sowp_portal/data-file/SWOP-Data-2022.xlsx
+#Filtramos la data para Sudamérica
+ind_data <- ind_data[ind_data$NAME %in% paises,]
+ind_data["NAME"][ind_data["NAME"] == "Bolivia (Plurinational State of)"] <- "Bolivia"
+ind_data["NAME"][ind_data["NAME"] == "Venezuela (Bolivarian Republic of)"] <- "Venezuela"
+ind_data$tasa_embarazo_adolescente  <- as.integer(ind_data$tasa_embarazo_adolescente)
 ```
 
 ```{r}
-# Filtramos la subregion Sudamérica
+# Filtramos la subregion Sudamérica en los polígonos
 sud_ame <- wrld_simpl[wrld_simpl$SUBREGION == 5, ]
+
 ```
 
 ```{r}
-sud_ame <- merge(sud_ame,covid_data,by="NAME")
+#Unimos los polígonos con la información
+sud_ame <- merge(sud_ame,ind_data,by="NAME")
+
 ```
 
 ```{r}
-                                                                               
 # Proyectamos el mapa                                   
 sud_ame <- spTransform(sud_ame, CRS("+init=epsg:31972"))
 
 # Construimos el cartograma
-sud_ame_cont <- cartogram_cont(sud_ame, "numero", itermax = 4)
+sud_ame_cont <- cartogram_cont(sud_ame, "tasa_embarazo_adolescente", itermax = 4)
 
-# Dibujamos el mapa
-tm_shape(sud_ame_cont) + tm_polygons("numero", style = "jenks") +
+# Dibujamos el mapa continuo
+tm_shape(sud_ame_cont) + tm_polygons("tasa_embarazo_adolescente", style = "jenks") +
   tm_layout(frame = FALSE, main.title = "Tasa de embarazo adolescente en Sudamérica", legend.position = c("left", "bottom"), main.title.size= 1)
 ```
 
 ```{r}
-# construct cartogram
-sud_ncont <- cartogram_ncont(sud_ame, "numero")
-
-# plot it
+# Dibujamos el mapa no continuo
+sud_ncont <- cartogram_ncont(sud_ame, "tasa_embarazo_adolescente")
 tm_shape(sud_ame) + tm_borders() +
-  tm_shape(sud_ncont) + tm_polygons("numero", style = "jenks") +
-  tm_layout(frame = FALSE, legend.position = c("left", "bottom"))
+  tm_shape(sud_ncont) + tm_polygons("tasa_embarazo_adolescente", style = "jenks") +
+  tm_layout(frame = FALSE, main.title = "Tasa de embarazo adolescente en Sudamérica", legend.position = c("left", "bottom"), main.title.size= 1)
 ```
 
