@@ -1,5 +1,6 @@
 ---
-title: "R Notebook"
+title: "Cartograma"
+subtitle: "Tasa de embarazo adolecente en Sudamérica
 knit: (function(input_file, encoding) {
     out_dir <- 'docs';
     rmarkdown::render(input_file,
@@ -10,19 +11,13 @@ html_document:
 df_print: paged
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+Este proyecto ha sido realizado en base a los pasos descritos en la página siguiente:
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
-
-```{r}
-#install.packages("cartogram")
-#install.packages("tmaptools")
-#install.packages("tmap")
-#install.packages("rgdal")
-
-```
+https://cran.r-project.org/web/packages/cartogram/readme/README.html
 
 ```{r}
+#Librerías necesarias
+
 library(cartogram)
 library(tmap)
 library(maptools)
@@ -30,11 +25,12 @@ library(sf)
 ```
 
 ```{r}
+#Cargamos la información de los polígonos espaciales de los mapas
 data(wrld_simpl)
 ```
 
 ```{r}
-# Cargamos las variables Covid
+# Cargamos las variables que vamos a graficar
 
 covid_data <- read.csv("covid_sudamerica.csv", sep = ";", header = TRUE)
 
@@ -47,29 +43,27 @@ sud_ame <- wrld_simpl[wrld_simpl$SUBREGION == 5, ]
 ```
 
 ```{r}
+#Unimos los polígonos con la información
 sud_ame <- merge(sud_ame,covid_data,by="NAME")
 ```
 
 ```{r}
-                                                                               
 # Proyectamos el mapa                                   
 sud_ame <- spTransform(sud_ame, CRS("+init=epsg:31972"))
 
 # Construimos el cartograma
 sud_ame_cont <- cartogram_cont(sud_ame, "numero", itermax = 4)
 
-# Dibujamos el mapa
+# Dibujamos el mapa continuo
 tm_shape(sud_ame_cont) + tm_polygons("numero", style = "jenks") +
   tm_layout(frame = FALSE, main.title = "Tasa de embarazo adolescente en Sudamérica", legend.position = c("left", "bottom"), main.title.size= 1)
 ```
 
 ```{r}
-# construct cartogram
+# Dibujamos el mapa no continuo
 sud_ncont <- cartogram_ncont(sud_ame, "numero")
-
-# plot it
 tm_shape(sud_ame) + tm_borders() +
   tm_shape(sud_ncont) + tm_polygons("numero", style = "jenks") +
-  tm_layout(frame = FALSE, legend.position = c("left", "bottom"))
+  tm_layout(frame = FALSE, main.title = "Tasa de embarazo adolescente en Sudamérica", legend.position = c("left", "bottom"), main.title.size= 1)
 ```
 
