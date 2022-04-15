@@ -23,13 +23,13 @@ https://www.unfpa.org/modules/custom/unfpa_global_sowp_portal/data-file/SWOP-Dat
 
 ```{r}
 #Librerías necesarias
-
+library(sp)
 library(cartogram)
 library(tmap)
 library(maptools)
 library(sf)
 library(openxlsx)
-library(sp)
+
 ```
 
 ```{r}
