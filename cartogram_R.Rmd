@@ -1,6 +1,5 @@
 ---
 title: "Cartograma"
-subtitle: "Tasa de embarazo adolescente en Sudamérica
 knit: (function(input_file, encoding) {
     out_dir <- 'docs';
     rmarkdown::render(input_file,
@@ -11,7 +10,9 @@ html_document:
 df_print: paged
 ---
 
-Este proyecto ha sido realizado en base a los pasos descritos en la página:
+En este proyecto se elabora un cartograma con la tasa de embarazo adolescente en Sudamérica.
+
+Ha sido realizado en base a los pasos descritos en la página:
 
 https://cran.r-project.org/web/packages/cartogram/readme/README.html
 
