@@ -29,6 +29,7 @@ library(tmap)
 library(maptools)
 library(sf)
 library(openxlsx)
+library(sp)
 ```
 
 ```{r}
