@@ -1,0 +1,75 @@
+---
+title: "R Notebook"
+knit: (function(input_file, encoding) {
+    out_dir <- 'docs';
+    rmarkdown::render(input_file,
+      encoding=encoding,
+      output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
+output:
+html_document:
+df_print: paged
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+#install.packages("cartogram")
+#install.packages("tmaptools")
+#install.packages("tmap")
+#install.packages("rgdal")
+
+```
+
+```{r}
+library(cartogram)
+library(tmap)
+library(maptools)
+library(sf)
+```
+
+```{r}
+data(wrld_simpl)
+```
+
+```{r}
+# Cargamos las variables Covid
+
+covid_data <- read.csv("covid_sudamerica.csv", sep = ";", header = TRUE)
+
+#https://www.unfpa.org/modules/custom/unfpa_global_sowp_portal/data-file/SWOP-Data-2022.xlsx
+```
+
+```{r}
+# Filtramos la subregion Sudamérica
+sud_ame <- wrld_simpl[wrld_simpl$SUBREGION == 5, ]
+```
+
+```{r}
+sud_ame <- merge(sud_ame,covid_data,by="NAME")
+```
+
+```{r}
+                                                                               
+# Proyectamos el mapa                                   
+sud_ame <- spTransform(sud_ame, CRS("+init=epsg:31972"))
+
+# Construimos el cartograma
+sud_ame_cont <- cartogram_cont(sud_ame, "numero", itermax = 4)
+
+# Dibujamos el mapa
+tm_shape(sud_ame_cont) + tm_polygons("numero", style = "jenks") +
+  tm_layout(frame = FALSE, main.title = "Tasa de embarazo adolescente en Sudamérica", legend.position = c("left", "bottom"), main.title.size= 1)
+```
+
+```{r}
+# construct cartogram
+sud_ncont <- cartogram_ncont(sud_ame, "numero")
+
+# plot it
+tm_shape(sud_ame) + tm_borders() +
+  tm_shape(sud_ncont) + tm_polygons("numero", style = "jenks") +
+  tm_layout(frame = FALSE, legend.position = c("left", "bottom"))
+```
+
