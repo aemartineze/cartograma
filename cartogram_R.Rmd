@@ -21,6 +21,10 @@ Los datos de la tasa de embarazo adolecente han sido cargados de la página del 
 https://www.unfpa.org/modules/custom/unfpa_global_sowp_portal/data-file/SWOP-Data-2022.xlsx
 
 
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
 ```{r}
 #Librerías necesarias
 library(sp)
